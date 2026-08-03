@@ -16,6 +16,6 @@ connectDB()
         console.log(`serving at http://localhost:${port}`)
     })
 
-}).catch((err0r)=>{
+}).catch((error)=>{
     console.log("MongoDB connection failed: ",error)
 })
