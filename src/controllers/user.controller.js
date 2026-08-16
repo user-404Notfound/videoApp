@@ -128,7 +128,7 @@ const userLogout = asyncHandler(async (req,res) => {
             $set:{ refreshToken: undefined }
         },
         {
-            new:true
+            returnDocument:'after'
         }
     )
 
