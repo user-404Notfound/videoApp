@@ -18,8 +18,8 @@ router.route('/register').post(upload.fields([
     userRegister
 );
 
-router.route("/login").post(userLogin)
+router.route("/login").post(upload.none(),userLogin)
 
-router.route("/login").post(verifyJWT,userLogout)
+router.route("/logout").post(verifyJWT,userLogout)
 
 export default router;
