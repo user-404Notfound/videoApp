@@ -74,15 +74,10 @@ const generateAccessAndRefreshToken = async (userId) => {
 }
 
 const userLogin = asyncHandler(async (req,res) => {
-    // get username or email and password
-    // check if username or email exist
-    // get user object and validate password
-    // generate the access and refresh token
-    // send cookies 
 
     const { username,email,password } = req.body;
 
-    if (!username || !email) {
+    if (!username && !email) {
         throw new ApiError(400,'username or email is required');
     }
 
@@ -122,8 +117,39 @@ const userLogin = asyncHandler(async (req,res) => {
         "user Logged In successfully"
     ))
 
+});
+
+const userLogout = asyncHandler(async (req,res) => {
+    const user = req.user;
+
+    await User.findByIdAndUpdate(
+        user._id,
+        {
+            $set:{ refreshToken: undefined }
+        },
+        {
+            new:true
+        }
+    )
+
+    const options = {
+        httpOnly:true,
+        secure:true
+    }
+
+    res.status(200)
+    .clearCookie("accessToken",options)
+    .clearCookie("refreshToken",options)
+    .json(new ApiResponse(
+        200,
+        {},
+        "User logged Out successfully"
+    ))
 })
+
+
 export {
     userRegister,
-    userLogin
+    userLogin,
+    userLogout
 };
