@@ -29,11 +29,22 @@ const userSchema = new Schema({
             required:[true,"Password is Required"]
         },
         avatar:{
-            type:String, //cloudinary url
-            required:true
+            url: {
+                type:String, //cloudinary url
+                required:true
+            },
+            public_id : {
+                type:String,
+                required:true
+            }
         },
         coverImage:{
-            type:String //cloudinary url
+            url: {
+                type:String, //cloudinary url
+            },
+            public_id : {
+                type:String,
+            }
         },
         watchHistory:[
             {
