@@ -32,11 +32,11 @@ router.route("/change-password").post(verifyJWT,upload.none(),changeCurrentPassw
 
 router.route("/get-user").post(verifyJWT,getCurrentUser)
 
-router.route("/update-account").post(verifyJWT,upload.none(),updateAccountDetails)
+router.route("/update-account").patch(verifyJWT,upload.none(),updateAccountDetails)
 
-router.route("/update-avatar").post(upload.single("avatar"),verifyJWT,updateUserAvatar)
+router.route("/update-avatar").patch(upload.single("avatar"),verifyJWT,updateUserAvatar)
 
-router.route("/update-coverImage").post(upload.single("coverImage"),verifyJWT,updateUserCoverImage)
+router.route("/update-coverImage").patch(upload.single("coverImage"),verifyJWT,updateUserCoverImage)
 
 router.route("/getChannelProfile/:username").get(verifyJWT,getUserChannelProfile)
 
