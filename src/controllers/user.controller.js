@@ -430,7 +430,7 @@ const getWatchHistory = asyncHandler(async (req,res) => {
         }
     ])
 
-    if (!user){
+    if (!user.length){
         throw new ApiError(404,"user not found")
     }
 
