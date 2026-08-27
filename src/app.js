@@ -25,7 +25,7 @@ app.use('/api/v1/users',userRouter)
 
 import videoRouter from './routes/video.routes.js'
 
-app.use('/api/vi/videos',videoRouter)
+app.use('/api/v1/videos',videoRouter)
 
 
 export default app;
