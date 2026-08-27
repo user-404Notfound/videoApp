@@ -6,7 +6,19 @@ const router = Router()
 
 router.use(verifyJWT)
 
-router.route('/publish-video').post(publishVideo);
+router.route('/publish-video').post(
+    upload.fields([
+        {
+            name:'video',
+            maxCount:1
+        },
+        {
+            name:'thumbnail',
+            maxCount:1
+        }
+    ]),
+    publishVideo
+);
 
 export default router;
 

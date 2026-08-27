@@ -14,8 +14,8 @@ const publishVideo = asyncHandler(async (req,res) => {
         throw new ApiError(400,"Title and description of video is required")
     }
 
-    const videoLocalPath = req.file?.video?.[0]?.path;
-    const thumbnailLocalPath = req.file?.thumbnail?.[0]?.path;
+    const videoLocalPath = req.files?.video?.[0]?.path;
+    const thumbnailLocalPath = req.files?.thumbnail?.[0]?.path;
 
     const video = await uploadOnCloudinary(videoLocalPath)
     const thumbnail = await uploadOnCloudinary(thumbnailLocalPath)
