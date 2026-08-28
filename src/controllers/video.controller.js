@@ -3,7 +3,7 @@ import {ApiResponse} from '../utils/ApiResponse.js'
 import {asyncHandler} from '../utils/asyncHandler.js'
 import {uploadOnCloudinary,deleteOnCloudinary} from '../utils/cloudinary.js'
 import {Video} from '../models/video.model.js'
-
+import {User} from '../models/user.model.js'
 
 const publishVideo = asyncHandler(async (req,res) => {
     const { title,description } = req.body;
@@ -68,4 +68,27 @@ const getVideoById = asyncHandler(async (req,res) => {
 
 })
 
-export {publishVideo,getVideoById};
+const togglePublishStatus = asyncHandler(async (req,res) => {
+    const {videoId} = req.params
+
+    const video = await Video.findById(videoId);
+
+    if (!video){
+        throw new ApiError(404,"video not found")
+    }
+
+    if (video.owner.toString() !== req.user?.id) {
+        throw new ApiError(403,"Unauthorised Request")
+    }
+
+    video.isPublished = !video.isPublished
+
+    await video.save({validateBeforeSave:false});
+    
+    res.status(200)
+    .json(new ApiResponse(200,{isPublished:video.isPublished},"Publish status changed successfully"))
+})
+export{ publishVideo,
+        getVideoById,
+        togglePublishStatus
+    };
