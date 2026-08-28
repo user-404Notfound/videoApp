@@ -12,7 +12,7 @@ const VideoSchema = new Schema({
                 required:true
             }
         },
-        tumbnail:{
+        thumbnail:{
             url:{
                 type:String,
                 required:true
