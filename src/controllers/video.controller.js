@@ -3,7 +3,6 @@ import {ApiResponse} from '../utils/ApiResponse.js'
 import {asyncHandler} from '../utils/asyncHandler.js'
 import {uploadOnCloudinary,deleteOnCloudinary} from '../utils/cloudinary.js'
 import {Video} from '../models/video.model.js'
-import {User} from '../models/user.model.js'
 
 const publishVideo = asyncHandler(async (req,res) => {
     const { title,description } = req.body;
@@ -88,7 +87,78 @@ const togglePublishStatus = asyncHandler(async (req,res) => {
     res.status(200)
     .json(new ApiResponse(200,{isPublished:video.isPublished},"Publish status changed successfully"))
 })
+
+const updateVideo = asyncHandler(async (req,res) => {
+    const {videoId} = req.params
+    const {title,description} = req.body
+
+    const thumbnailLocalPath = req.file?.path;
+
+    if (!title && !description && !thumbnailLocalPath){
+        throw new ApiError(400,"At least one field is required to update video")
+    }
+    
+    const video = await Video.findById(videoId);
+
+    if (!video){
+        throw new ApiError(404,"Video not found")
+    }
+
+    if (video.owner.toString() !== req.user?._id) {
+        throw new ApiError(403,"Unauthorised Request")
+    }
+
+    const oldthumbnail = video.thumbnail;
+
+    let thumbnail;
+
+    if (thumbnailLocalPath){
+        thumbnail = await uploadOnCloudinary(thumbnailLocalPath)
+        if (!thumbnail){
+            throw new ApiError(500,'Something went wrong while uploading to cloudinary')
+        }
+    }
+
+
+    if (title?.trim()){
+        video.title = title.trim()
+    }
+
+    if (description?.trim()) {
+        video.description = description.trim()
+    }
+
+    if (thumbnailLocalPath) {
+        video.thumbnail = { url:thumbnail?.secure_url, public_id:thumbnail?.public_id}
+    }
+    
+
+    let updatedVideo;
+    try {
+        updatedVideo = await video.save();
+        updatedVideo = updatedVideo.toObject();
+        
+    } catch (error){
+       
+        if (thumbnail) {
+            await deleteOnCloudinary(thumbnail.public_id)
+        }
+
+       throw new ApiError(500,'Something went wrong while saving database')
+    }
+    if (oldthumbnail && thumbnail?.public_id) {
+        await deleteOnCloudinary(oldthumbnail.public_id);
+    }
+
+    return res.status(200)
+    .json(new ApiResponse(200,
+       updatedVideo
+    ,"video updated successfully"))
+})
+
+
 export{ publishVideo,
         getVideoById,
-        togglePublishStatus
+        togglePublishStatus,
+        updateVideo
     };
