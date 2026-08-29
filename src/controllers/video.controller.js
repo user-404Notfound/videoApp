@@ -104,7 +104,7 @@ const updateVideo = asyncHandler(async (req,res) => {
         throw new ApiError(404,"Video not found")
     }
 
-    if (video.owner.toString() !== req.user?._id) {
+    if (video.owner.toString() !== req.user?._id.toString()) {
         throw new ApiError(403,"Unauthorised Request")
     }
 
