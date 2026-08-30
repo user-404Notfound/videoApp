@@ -156,9 +156,41 @@ const updateVideo = asyncHandler(async (req,res) => {
     ,"video updated successfully"))
 })
 
+const deleteVideo = asyncHandler(async (req,res) => {
+    const {videoId} = req.params
+
+    const video = await Video.findById(videoId);
+
+    if (!video) {
+        throw new ApiError(404,"video not found")
+    }
+
+    if (video.owner.toString() !== req.user?.id.toString()) {
+        throw new ApiError(401,"Unauthorised Request")
+    }
+
+    const thumbnail = video.thumbnail;
+    const videoFile = video.videoFile;
+
+    await deleteOnCloudinary(thumbnail.public_id) 
+    await deleteOnCloudinary(videoFile.public_id);
+
+    /*
+        1. yet implementations is not complete beacause we are yet to implement cascade delete logic 
+        for associated comments,liked and tweets.
+        2. Error handling is not properly implemented 
+    */ 
+    
+    await Video.deleteOne({_id:video._id});
+
+    res.status(200)
+    .json(new ApiResponse(200,{},'video deleted successfully'))
+})
+
 
 export{ publishVideo,
         getVideoById,
         togglePublishStatus,
-        updateVideo
+        updateVideo,
+        deleteVideo
     };
